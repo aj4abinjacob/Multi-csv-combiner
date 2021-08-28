@@ -18,7 +18,7 @@ from collections import OrderedDict
 
 # In[14]:
 
-
+unique_columns = []
 column_names = {}
 for file in os.listdir():
     if file.endswith(".csv") and file != "Combiner_Columns.csv":
@@ -31,7 +31,8 @@ for file in os.listdir():
 for file in os.listdir():
     if file.endswith(".csv") and file != "Combiner_Columns.csv":
         df = pd.read_csv(file)
-        column_names[file].extend(df.columns.tolist())
+        unique_columns.extend(df.columns)
+        column_names[file].extend(sorted(df.columns.tolist()))
 
 
 # In[16]:
@@ -48,7 +49,12 @@ combiner_column_list = []
 for key,value in column_names.items():
     value = str(value).replace("'","")[1:-1]
     combiner_column_list.append(value)
-combiner_column_list.append("Write Columns to combine below")
+unique_columns = sorted(set(unique_columns))
+unique_columns.insert(0,"All unique columns")
+combiner_column_list.append("**********************")
+combiner_column_list.append(str(unique_columns).replace('[','').replace(']','').replace('"','').replace("'",''))
+#print(combiner_column_list)
+combiner_column_list.append("Write Columns to combine below [Row Wise]")
 
 
 # In[20]:
@@ -135,7 +141,6 @@ print("Done! combined and saved in Combined.csv")
 
 
 # In[ ]:
-
 
 
 
