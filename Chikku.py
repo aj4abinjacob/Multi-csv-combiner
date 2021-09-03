@@ -95,7 +95,8 @@ for line in file_text:
             final_columns[fin_col[0]] = fin_col
         else:
             final_columns[fin_col[0]] = fin_col[1:]
-del(final_columns['Write Columns to combine below'])            
+print(final_columns)
+del(final_columns['Write Columns to combine below [Row Wise]'])            
 
 
 # In[30]:
