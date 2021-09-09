@@ -95,7 +95,7 @@ for line in file_text:
             final_columns[fin_col[0]] = fin_col
         else:
             final_columns[fin_col[0]] = fin_col[1:]
-print(final_columns)
+
 del(final_columns['Write Columns to combine below [Row Wise]'])            
 
 
@@ -138,6 +138,11 @@ for file in file_list2:
         combiner_list.append(df)
 frame = pd.concat(combiner_list, axis=0, ignore_index=True)
 frame.to_csv("Combined.csv",index=False)
+
+for fi in os.listdir():
+    if fi.endswith("_chikku_combined.csv"):
+        os.remove(fi)
+        
 print("Done! combined and saved in Combined.csv")
 
 
