@@ -16,7 +16,10 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n): 
         yield l[i:i + n]
 
-
+def get_first_columns(file):
+    with open(file,"r",encoding='utf-8') as f:
+        first_line = f.readline().strip()
+    return first_line.split(",")
 
 
 # In[14]:
@@ -40,10 +43,11 @@ except:
 for file in os.listdir():
     if file.endswith(".csv") and file != "Combiner_Columns.csv":
         print(f"Reading {file} columns")
-        df = pd.read_csv(file,low_memory=False)
-        unique_columns.extend(df.columns)
-        column_names[file].extend(sorted(df.columns.tolist()))
-        del df
+        file_columns = get_first_columns(file)
+
+        unique_columns.extend(file_columns)
+        column_names[file].extend(sorted(file_columns))
+   
 
 
 # In[16]:
@@ -57,6 +61,8 @@ for x in column_names:
 
 print(f"\nCreating Combiner_Columns.csv file for combiner configuration\n***********")
 combiner_column_list = []
+combiner_column_list.append(f"File Names,Columns")
+combiner_column_list.append("***********")
 for key,value in column_names.items():
     value = str(value).replace("'","")[1:-1]
     combiner_column_list.append(value)
@@ -171,4 +177,3 @@ for fi in os.listdir():
         os.remove(fi)
         
 print("Done! combined and saved in Combined.csv")
-
