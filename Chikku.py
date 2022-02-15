@@ -162,7 +162,7 @@ del df
 
 # In[34]:
 
-print("Combing the files\n***********")
+print("\nCombining the files\n***********")
 combiner_list = []
 for file in file_list2:
     if file.endswith(".csv"):
@@ -177,3 +177,9 @@ for fi in os.listdir():
         os.remove(fi)
         
 print("Done! combined and saved in Combined.csv")
+
+
+# In[ ]:
+
+
+
