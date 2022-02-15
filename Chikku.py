@@ -6,12 +6,15 @@
 
 import pandas as pd
 import os
-import numpy as np
 from collections import OrderedDict
 
 
 # In[13]:
-
+def divide_chunks(l, n):
+      
+    # looping till length l
+    for i in range(0, len(l), n): 
+        yield l[i:i + n]
 
 
 
@@ -28,11 +31,19 @@ for file in os.listdir():
 # In[15]:
 
 
+print("Starting the script")
+print("\nReading all csv files in the current directory\n***********")
+try:
+    os.remove("Combiner_Columns.csv")
+except:
+    pass
 for file in os.listdir():
     if file.endswith(".csv") and file != "Combiner_Columns.csv":
-        df = pd.read_csv(file)
+        print(f"Reading {file} columns")
+        df = pd.read_csv(file,low_memory=False)
         unique_columns.extend(df.columns)
         column_names[file].extend(sorted(df.columns.tolist()))
+        del df
 
 
 # In[16]:
@@ -44,34 +55,50 @@ for x in column_names:
 
 # In[17]:
 
-
+print(f"\nCreating Combiner_Columns.csv file for combiner configuration\n***********")
 combiner_column_list = []
 for key,value in column_names.items():
     value = str(value).replace("'","")[1:-1]
     combiner_column_list.append(value)
 unique_columns = sorted(set(unique_columns))
-unique_columns.insert(0,"All unique columns")
+# unique_columns.insert(0,"All unique columns")
 combiner_column_list.append("**********************")
-combiner_column_list.append(str(unique_columns).replace('[','').replace(']','').replace('"','').replace("'",''))
-#print(combiner_column_list)
+combiner_column_list.append("All unique columns")
+unique_columns = list(divide_chunks(unique_columns, 7))
+# print(x)
+for each_row in unique_columns:
+    combiner_column_list.append(",".join(each_row))
+# combiner_column_list.append(",".join(unique_columns))
+# print(combiner_column_list)
+combiner_column_list.append("")
 combiner_column_list.append("Write Columns to combine below [Row Wise]")
 
 
 # In[20]:
 
-
 with open('Combiner_Columns.csv', 'w') as f:
     f.writelines('\n'.join(combiner_column_list))
 
 
+print(f"Done Creating Combiner_Columns.csv file")
+
 # In[21]:
 
+# try:
+#     os.system("libreoffice Combiner_Columns.csv")
+# except:
+#     os.system("Start Excel Combiner_Columns.csv")
+print("\nPlease edit the Combiner_Columns.csv file that is created in the current directory")
 
-os.system("libreoffice Combiner_Columns.csv")
-
+usr_input = input("\nDone editing the Combiner_Columns.csv file[Y/N] ")
+if "y" in usr_input.lower():
+    pass
+else:
+    print(f"Run the script again.")
+    exit()
 
 # In[25]:
-
+print()
 
 file = open("Combiner_Columns.csv","r+")
 file_text = file.readlines()
@@ -113,7 +140,7 @@ file_list2 = []
 for file in os.listdir():
     if file.endswith(".csv") and file != "Combiner_Columns.csv":
         file_name = file.split(".")[0]
-        df = pd.read_csv(file)
+        df = pd.read_csv(file,low_memory=False)
         for k in final_columns:
             for v in final_columns[k]:
                 df.rename({v:k},axis=1,inplace=True)
@@ -125,16 +152,16 @@ for file in os.listdir():
         file_list2.append(f"{file_name}_chikku_combined.csv")
         print(f"Formating {file}")
     
-
+del df
 
 # In[34]:
 
-
+print("Combing the files\n***********")
 combiner_list = []
 for file in file_list2:
     if file.endswith(".csv"):
         print(f"Combining {file}")
-        df = pd.read_csv(file, index_col=None, header=0)
+        df = pd.read_csv(file, index_col=None, header=0,low_memory=False)
         combiner_list.append(df)
 frame = pd.concat(combiner_list, axis=0, ignore_index=True)
 frame.to_csv("Combined.csv",index=False)
@@ -144,9 +171,4 @@ for fi in os.listdir():
         os.remove(fi)
         
 print("Done! combined and saved in Combined.csv")
-
-
-# In[ ]:
-
-
 
